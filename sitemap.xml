@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9" xmlns:xhtml="http://www.w3.org/1999/xhtml">
+  <url>
+    <loc>https://www.crafters.dev/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.crafters.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.crafters.dev/en/"/>
+  </url>
+  <url>
+    <loc>https://www.crafters.dev/en/</loc>
+    <lastmod>2026-10-02</lastmod>
+    <xhtml:link rel="alternate" hreflang="fr" href="https://www.crafters.dev/"/>
+    <xhtml:link rel="alternate" hreflang="en" href="https://www.crafters.dev/en/"/>
+  </url>
+</urlset>
