@@ -84,3 +84,60 @@ if (!reducedMotion && "IntersectionObserver" in window) {
   }, { rootMargin: "0px 0px -8% 0px" });
   targets.forEach((target) => observer.observe(target));
 }
+
+// Le menu souligne la section visible : un trait bleu glisse d'un lien à l'autre au défilement.
+const nav = document.querySelector(".site-nav");
+const entries = nav
+  ? [...nav.querySelectorAll('a[href^="#"]')]
+      .map((link) => ({ link, section: document.querySelector(link.getAttribute("href")) }))
+      .filter(({ section }) => section)
+  : [];
+if (entries.length) {
+  const header = document.querySelector(".site-header");
+  const marker = document.createElement("span");
+  marker.className = "site-nav__marker";
+  marker.setAttribute("aria-hidden", "true");
+  nav.prepend(marker); // en premier, pour ne pas devenir le :last-child que la version mobile conserve
+
+  const update = () => {
+    const line = header.offsetHeight + window.innerHeight * 0.3;
+    const atBottom = window.innerHeight + window.scrollY >= document.documentElement.scrollHeight - 2;
+    let current = null;
+    entries.forEach(({ link, section }) => {
+      if (section.getBoundingClientRect().top <= line) current = link;
+    });
+    if (atBottom) current = entries[entries.length - 1].link;
+    entries.forEach(({ link }) => {
+      if (link === current) link.setAttribute("aria-current", "true");
+      else link.removeAttribute("aria-current");
+    });
+    if (!current || !current.offsetWidth) {
+      marker.classList.remove("is-on");
+      return;
+    }
+    if (!marker.classList.contains("is-on")) {
+      // Première apparition : on se place sans glisser.
+      marker.style.transition = "none";
+      void marker.getBoundingClientRect();
+    }
+    marker.style.transform = `translateX(${current.offsetLeft}px)`;
+    marker.style.width = `${current.offsetWidth}px`;
+    void marker.getBoundingClientRect();
+    marker.style.transition = "";
+    marker.classList.add("is-on");
+  };
+
+  let scheduled = false;
+  const schedule = () => {
+    if (scheduled) return;
+    scheduled = true;
+    requestAnimationFrame(() => {
+      scheduled = false;
+      update();
+    });
+  };
+  window.addEventListener("scroll", schedule, { passive: true });
+  window.addEventListener("resize", schedule);
+  document.fonts?.ready.then(update);
+  update();
+}
