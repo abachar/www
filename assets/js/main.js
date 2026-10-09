@@ -61,3 +61,26 @@ if (figures.length && !reducedMotion && "IntersectionObserver" in window) {
     observer.observe(figure);
   });
 }
+
+// Les blocs encore sous la fenêtre se révèlent à leur entrée, avec un léger décalage entre voisins.
+// Ce qui est visible au chargement n'est jamais masqué, et rien n'est masqué sans JavaScript.
+if (!reducedMotion && "IntersectionObserver" in window) {
+  const targets = document.querySelectorAll(".service, .mission, .talk, .note, .repos li, .more, .skills > div, .contact__inner > *");
+  let armed = false;
+  const observer = new IntersectionObserver((entries) => {
+    let delay = 0;
+    entries.forEach(({ target, isIntersecting }) => {
+      if (!isIntersecting) {
+        target.classList.add("reveal");
+        return;
+      }
+      if (armed) {
+        setTimeout(() => target.classList.add("is-in"), delay);
+        delay += 60;
+      }
+      observer.unobserve(target);
+    });
+    armed = true;
+  }, { rootMargin: "0px 0px -8% 0px" });
+  targets.forEach((target) => observer.observe(target));
+}

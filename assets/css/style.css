@@ -449,11 +449,19 @@ a:hover { color: var(--blue-strong); text-decoration-thickness: 2px; }
   .actions .button { flex: 1 1 100%; justify-content: center; }
 }
 
+/* Révélation au défilement : le script masque les éléments encore sous la fenêtre,
+   puis les révèle à leur entrée. Ceux déjà visibles au chargement ne sont jamais masqués. */
+@media (prefers-reduced-motion: no-preference) {
+  .reveal { opacity: 0; transform: translateY(0.75rem); }
+  .reveal.is-in { opacity: 1; transform: none; transition: opacity 0.45s ease-out, transform 0.45s var(--ease); }
+}
+
 @media (prefers-reduced-motion: reduce) {
   html { scroll-behavior: auto; }
 }
 
 @media print {
   .site-header, .actions, .video__play, .note { display: none; }
+  .reveal { opacity: 1; transform: none; }
   .contact { background: none; }
 }
