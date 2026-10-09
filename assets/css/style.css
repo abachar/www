@@ -30,6 +30,8 @@
 
   --gutter: clamp(1rem, 4vw, 2.5rem);
   --measure: 38rem;
+
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
 }
 
 @media (prefers-color-scheme: dark) {
@@ -179,10 +181,10 @@ a:hover { color: var(--blue-strong); text-decoration-thickness: 2px; }
   border-radius: 6px;
 }
 
-/* Le seul mouvement de la page : les accolades s'ouvrent au chargement. */
+/* Mouvement d'ouverture : les accolades s'écartent au chargement. */
 @media (prefers-reduced-motion: no-preference) {
-  .statement__brace--open  { animation: brace-open 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
-  .statement__brace--close { animation: brace-close 0.7s cubic-bezier(0.2, 0.7, 0.2, 1) both; }
+  .statement__brace--open  { animation: brace-open 0.7s var(--ease) both; }
+  .statement__brace--close { animation: brace-close 0.7s var(--ease) both; }
   .statement__body { animation: body-in 0.6s ease-out 0.25s both; }
 }
 @keyframes brace-open  { from { transform: translateY(1.1em); } }
@@ -237,7 +239,7 @@ a:hover { color: var(--blue-strong); text-decoration-thickness: 2px; }
 .service__figure .ac-soft { fill: color-mix(in srgb, var(--blue) 14%, transparent); stroke: var(--blue); stroke-width: 1.5; }
 .service__figure .box { fill: var(--paper); stroke: var(--ink-soft); stroke-width: 1.25; stroke-opacity: 0.55; }
 .service__figure .mod { fill: var(--rule); }
-.service__figure .ghost { fill: none; stroke: var(--ink-soft); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.55; }
+.service__figure .ghost { fill: var(--rule); fill-opacity: 0; stroke: var(--ink-soft); stroke-width: 1; stroke-dasharray: 3 3; opacity: 0.55; }
 .service__figure .dot { fill: var(--paper); stroke: var(--ink-soft); stroke-width: 1.5; }
 .service__figure .check { fill: none; stroke: var(--paper); stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .service__figure .arrow { fill: var(--ink-soft); }
@@ -249,6 +251,58 @@ a:hover { color: var(--blue-strong); text-decoration-thickness: 2px; }
 .service__figure .tx-accent { fill: var(--blue); font-size: 16px; }
 .service dt { font-weight: 600; font-size: var(--step-1); line-height: 1.3; }
 .service dd { margin-top: 0.6rem; color: var(--ink-soft); max-width: var(--measure); }
+
+/* Les schémas se jouent quand ils entrent dans la fenêtre, puis au survol.
+   Sans JavaScript ou en mouvement réduit, ils restent à leur état final.
+   .is-live : les animations s'appliquent ; .is-paused : figées à l'image de départ. */
+@media (prefers-reduced-motion: no-preference) {
+  .service__figure [data-step="1"] { --i: 0; }
+  .service__figure [data-step="2"] { --i: 1; }
+  .service__figure [data-step="3"] { --i: 2; }
+  .service__figure [data-step="4"] { --i: 3; }
+  .service__figure.is-live * { transform-box: fill-box; transform-origin: center; }
+  .service__figure.is-live.is-paused * { animation-play-state: paused !important; }
+
+  /* Git : main se trace, chaque branche se dessine puis est revue. */
+  .is-live[data-figure="git"] .ln { --len: 272; stroke-dasharray: var(--len); animation: fig-draw 0.5s var(--ease) both; }
+  .is-live[data-figure="git"] .ac-ln { --len: 156; stroke-dasharray: var(--len); animation: fig-draw 0.4s var(--ease) both; animation-delay: calc(0.4s + var(--i) * 0.45s); }
+  .is-live[data-figure="git"] .commit { animation: fig-pop 0.3s var(--ease) both; animation-delay: calc(0.6s + var(--i) * 0.45s); }
+  .is-live[data-figure="git"] .merge { animation: fig-pop 0.3s var(--ease) both; animation-delay: calc(0.8s + var(--i) * 0.45s); }
+  .is-live[data-figure="git"] .check { --len: 11; stroke-dasharray: var(--len); animation: fig-draw 0.25s var(--ease) both; animation-delay: calc(0.95s + var(--i) * 0.45s); }
+  .is-live[data-figure="git"] .dot { animation: fig-pop 0.3s var(--ease) both; }
+  .is-live[data-figure="git"] .dot[data-step] { animation-delay: calc(0.8s + var(--i) * 0.45s); }
+  .is-live[data-figure="git"] .tx { animation: fig-fade 0.4s ease-out both; animation-delay: 0.15s; }
+  .is-live[data-figure="git"] .tx[data-step] { animation-delay: 0.7s; }
+
+  /* Legacy : un module quitte l'ancienne application, devient bleu dans la nouvelle, puis le trafic bascule. */
+  .is-live[data-figure="legacy"] .ghost[data-step] { animation: fig-unmod 0.6s var(--ease) both; animation-delay: calc(0.3s + var(--i) * 0.6s); }
+  .is-live[data-figure="legacy"] .ac-mod[data-step] { animation: fig-migrate 0.6s var(--ease) both; animation-delay: calc(0.3s + var(--i) * 0.6s); }
+  .is-live[data-figure="legacy"] [data-step="3"] { animation: fig-fade 0.4s ease-out both; animation-delay: 1.6s; }
+
+  /* Hexagone : le domaine apparaît, puis les adaptateurs viennent se brancher sur leurs ports. */
+  .is-live[data-figure="hexagon"] polygon { animation: fig-grow 0.5s var(--ease) both; }
+  .is-live[data-figure="hexagon"] .ac-soft { animation-delay: 0.1s; }
+  .is-live[data-figure="hexagon"] .tx-strong { animation: fig-fade 0.4s ease-out both; animation-delay: 0.3s; }
+  .is-live[data-figure="hexagon"] .ln { animation: fig-fade 0.4s ease-out both; animation-delay: 0.45s; }
+  .is-live[data-figure="hexagon"] .adapter { animation: fig-slide 0.45s var(--ease) both; animation-delay: calc(0.5s + var(--i) * 0.12s); }
+  .is-live[data-figure="hexagon"] .adapter--l { --dx: -28px; }
+  .is-live[data-figure="hexagon"] .adapter--r { --dx: 28px; }
+  .is-live[data-figure="hexagon"] .ac[data-step] { animation: fig-pop 0.3s var(--ease) both; animation-delay: calc(0.65s + var(--i) * 0.12s); }
+  .is-live[data-figure="hexagon"] .tx[data-step] { animation: fig-fade 0.4s ease-out both; animation-delay: 1.1s; }
+
+  /* TDD : rouge, vert, refactor, dans l'ordre du cycle. */
+  .is-live[data-figure="tdd"] circle { animation: fig-pop 0.3s var(--ease) both; animation-delay: calc(0.1s + var(--i) * 0.45s); }
+  .is-live[data-figure="tdd"] .tx { animation: fig-fade 0.35s ease-out both; animation-delay: calc(0.2s + var(--i) * 0.45s); }
+  .is-live[data-figure="tdd"] .ln { animation: fig-fade 0.35s ease-out both; animation-delay: calc(0.3s + var(--i) * 0.45s); }
+  .is-live[data-figure="tdd"] .tx-strong { animation: fig-pop 0.4s var(--ease) both; animation-delay: 1.45s; }
+}
+@keyframes fig-draw { from { stroke-dashoffset: var(--len); } }
+@keyframes fig-fade { from { opacity: 0; } }
+@keyframes fig-pop { from { opacity: 0; transform: scale(0.2); } }
+@keyframes fig-grow { from { opacity: 0; transform: scale(0.85); } }
+@keyframes fig-slide { from { opacity: 0; transform: translateX(var(--dx)); } }
+@keyframes fig-unmod { from { opacity: 1; fill-opacity: 1; stroke-opacity: 0; } }
+@keyframes fig-migrate { from { fill: var(--rule); transform: translateX(-164px); } }
 
 /* Parcours */
 
