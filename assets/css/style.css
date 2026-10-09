@@ -440,7 +440,22 @@ a:hover { color: var(--blue-strong); text-decoration-thickness: 2px; }
   overflow-wrap: anywhere;
 }
 .contact__links { display: flex; flex-wrap: wrap; gap: 0.5rem 2rem; margin-top: 1.5rem; font-weight: 500; }
-.contact__email a { display: inline-flex; align-items: center; gap: 0.45em; }
+/* L'adresse garde un filet discret ; au survol, un trait bleu se trace sous le texte, de gauche à droite. */
+.contact__email a { position: relative; display: inline-flex; align-items: center; gap: 0.45em; text-decoration: none; }
+.contact__email a::before, .contact__email a::after {
+  content: "";
+  position: absolute;
+  left: 1.25em; /* après l'icône et son espacement */
+  right: 0;
+  bottom: -0.08em;
+  height: 2px;
+}
+.contact__email a::before { background: var(--rule); }
+.contact__email a::after { background: var(--blue); transform: scaleX(0); transform-origin: left; }
+.contact__email a:hover::after, .contact__email a:focus-visible::after { transform: scaleX(1); }
+@media (prefers-reduced-motion: no-preference) {
+  .contact__email a::after { transition: transform 0.35s var(--ease); }
+}
 .contact__email-icon { width: 0.8em; height: 0.8em; }
 .contact__links a { color: var(--ink); }
 
