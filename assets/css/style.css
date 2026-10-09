@@ -85,6 +85,7 @@ a:hover { color: var(--blue-strong); text-decoration-thickness: 2px; }
 /* En-tête */
 
 .lang-hint { background: var(--mist); border-bottom: 1px solid var(--rule); font-size: var(--step--1); }
+.lang-hint__close { transition: color 0.15s ease-out, background-color 0.15s ease-out; }
 .lang-hint__inner { display: flex; align-items: center; justify-content: space-between; gap: 1rem; min-height: 2.75rem; }
 .lang-hint a { font-weight: 500; }
 .lang-hint__close {
@@ -123,10 +124,10 @@ a:hover { color: var(--blue-strong); text-decoration-thickness: 2px; }
   text-decoration: none;
 }
 .wordmark:hover { color: var(--ink); }
-.wordmark .brace { color: var(--blue); }
+.wordmark .brace { display: inline-block; color: var(--blue); }
 
 .site-nav { position: relative; display: flex; gap: clamp(1rem, 2.5vw, 2rem); font-size: var(--step--1); font-weight: 500; }
-.site-nav a { color: var(--ink-soft); text-decoration: none; }
+.site-nav a { color: var(--ink-soft); text-decoration: none; transition: color 0.15s ease-out; }
 .site-nav a:hover { color: var(--ink); text-decoration: underline; }
 .site-nav a[aria-current="true"] { color: var(--ink); }
 /* Soulignement bleu qui glisse sous le lien de la section visible (posé par le script). */
@@ -146,7 +147,7 @@ a:hover { color: var(--blue-strong); text-decoration-thickness: 2px; }
 }
 
 .lang-switch { display: flex; gap: 0.75rem; padding-left: 1.25rem; border-left: 1px solid var(--rule); font-size: var(--step--1); font-weight: 500; }
-.lang-switch a { color: var(--ink-soft); text-decoration: none; }
+.lang-switch a { color: var(--ink-soft); text-decoration: none; transition: color 0.15s ease-out; }
 .lang-switch a:hover { color: var(--ink); text-decoration: underline; }
 .lang-switch a[aria-current="page"] { color: var(--ink); text-decoration: underline; text-decoration-color: var(--blue); text-decoration-thickness: 2px; }
 
@@ -192,6 +193,7 @@ a:hover { color: var(--blue-strong); text-decoration-thickness: 2px; }
   font-weight: 500;
   text-decoration: none;
 }
+.button { transition: background-color 0.15s ease-out, border-color 0.15s ease-out, color 0.15s ease-out, transform 0.15s ease-out; }
 .button:hover { background: var(--mist); color: var(--ink); }
 .button--primary { background: var(--blue); border-color: var(--blue); color: var(--on-blue); }
 .button--primary:hover { background: var(--blue-strong); border-color: var(--blue-strong); color: var(--on-blue); }
@@ -388,6 +390,7 @@ a:hover { color: var(--blue-strong); text-decoration-thickness: 2px; }
   border-width: 0.75rem 0 0.75rem 1.25rem;
   border-color: transparent transparent transparent #fff;
 }
+.video__play::before { transition: background-color 0.2s ease-out, transform 0.2s var(--ease); }
 .video__play:hover::before { background: #1d4fa6; }
 .video__play:focus-visible { outline-offset: -4px; outline-color: #fff; }
 
@@ -449,6 +452,7 @@ a:hover { color: var(--blue-strong); text-decoration-thickness: 2px; }
 .legal { flex: 1 1 30rem; }
 .legal summary { cursor: pointer; width: fit-content; color: var(--ink); font-weight: 500; }
 .legal__body { max-width: 46rem; margin-top: 1rem; }
+.legal summary { transition: color 0.15s ease-out; }
 .legal__body p + p { margin-top: 0.75rem; }
 .legal strong { color: var(--ink); font-weight: 500; }
 
@@ -473,6 +477,19 @@ a:hover { color: var(--blue-strong); text-decoration-thickness: 2px; }
   .mission { grid-template-columns: minmax(0, 1fr); }
   .actions .button { flex: 1 1 100%; justify-content: center; }
 }
+
+/* Micro-interactions : survols et ouvertures, tous sous la préférence de mouvement. */
+@media (prefers-reduced-motion: no-preference) {
+  .button:hover { transform: translateY(-1px); }
+  .button:active { transform: none; transition-duration: 0.05s; }
+  .video__play:hover::before, .video__play:focus-visible::before { transform: scale(1.06); }
+  .wordmark .brace { transition: transform 0.25s var(--ease); }
+  .wordmark:hover .brace:first-child { transform: translateX(-0.12em); }
+  .wordmark:hover .brace:last-child { transform: translateX(0.12em); }
+  .lang-hint:not([hidden]) { animation: hint-in 0.35s ease-out both; }
+  .legal[open] .legal__body { animation: rise-in 0.3s var(--ease) both; }
+}
+@keyframes hint-in { from { opacity: 0; transform: translateY(-0.5rem); } }
 
 /* Révélation au défilement : le script masque les éléments encore sous la fenêtre,
    puis les révèle à leur entrée. Ceux déjà visibles au chargement ne sont jamais masqués. */
